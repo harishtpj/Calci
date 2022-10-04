@@ -1,15 +1,22 @@
 # The Calci Programming language Interpreter
 
-from calci.lex import Lexer, TokType
+import sys
+from calci.lex import Lexer
+from calci.parse import Parser
 
 def main():
-    input = "IF+-123 foo*THEN/"
-    lexer = Lexer(input)
+    print("Calci Interpreter")
 
-    token = lexer.getToken()
-    while token.kind != TokType.EOF:
-        print(token.kind)
-        token = lexer.getToken()
+    if len(sys.argv) < 2:
+        sys.exit("Error: Compiler needs source file as argument.")
+    with open(sys.argv[1], 'r') as progfile:
+        input = progfile.read()
+
+    lexer = Lexer(input)
+    parser = Parser(lexer)
+
+    parser.program()
+    print("Parsing completed")
 
 if __name__ == "__main__":
     main()

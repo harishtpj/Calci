@@ -1,0 +1,13 @@
+println "How many fibonacci numbers do you want?"
+input nums
+println ""
+
+var a := 0
+var b := 1
+while nums > 0 repeat
+    println a
+    var c := a + b
+    var a := b
+    var b := c
+    var nums := nums - 1
+endwhile

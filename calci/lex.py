@@ -45,7 +45,7 @@ class Token:
     @staticmethod
     def checkIfKeyword(tokText):
         for kind in TokType:
-            if kind.name == tokText and kind.value >= 100 and kind.value < 200:
+            if kind.name.lower() == tokText and kind.value >= 100 and kind.value < 200:
                 return kind
         return None
 

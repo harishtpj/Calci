@@ -1,0 +1,4 @@
+print "Enter a number: "
+input number
+print "You entered "
+println number
