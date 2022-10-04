@@ -40,6 +40,12 @@ class Parser:
                self.checkToken(TokType.LTEQ) or \
                self.checkToken(TokType.EQ) or \
                self.checkToken(TokType.NOTEQ)
+    
+    def isType(self) -> bool:
+        return self.checkToken(TokType.NAT) or \
+               self.checkToken(TokType.INT) or \
+               self.checkToken(TokType.REAL) or \
+               self.checkToken(TokType.STR)
 
     # Grammar Parsing Rules (see Calci.g for rules)
 
@@ -81,7 +87,7 @@ class Parser:
             self.nextToken()
 
             if self.curToken.text not in self.vars:
-                self.vars.add(self.curToken.text)
+                self.abort(f"Referencing variable before declaration: {self.curToken.text}")
 
             self.match(TokType.IDENTIFIER)
         
@@ -91,13 +97,30 @@ class Parser:
             self.nextToken()
 
             if self.curToken.text not in self.vars:
-                self.vars.add(self.curToken.text)
+                self.abort(f"Referencing variable before declaration: {self.curToken.text}")
 
             self.match(TokType.IDENTIFIER)
             self.match(TokType.COLONEQ)
             self.expression()
         
         # Calci.g => Subrule {5}
+        elif self.checkToken(TokType.LET):
+            print("STATEMENT-LET")
+            self.nextToken()
+
+            if self.curToken.text not in self.vars:
+                self.vars.add(self.curToken.text)
+
+            self.match(TokType.IDENTIFIER)
+            self.match(TokType.COLON)
+            
+            if self.isType():
+                print(f"Vartype ({self.curToken.text})")
+                self.nextToken()
+            else:
+                self.abort(f"Expected type name at: {self.curToken.text}")
+        
+        # Calci.g => Subrule {6}
         elif self.checkToken(TokType.IF):
             print("STATEMENT-IF")
             self.nextToken()
@@ -111,7 +134,7 @@ class Parser:
             
             self.match(TokType.ENDIF)
         
-        # Calci.g => Subrule {6}
+        # Calci.g => Subrule {7}
         elif self.checkToken(TokType.WHILE):
             print("STATEMENT-WHILE")
             self.nextToken()
@@ -183,7 +206,7 @@ class Parser:
             self.nextToken()
         elif self.checkToken(TokType.IDENTIFIER):
             if self.curToken.text not in self.vars:
-                self.abort(f"Referencing variable before assignment: {self.curToken.text}")
+                self.abort(f"Referencing variable before declaration: {self.curToken.text}")
             self.nextToken()
         else:
             # Error!

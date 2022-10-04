@@ -15,13 +15,20 @@ class TokType(Enum):
     PRINT = 101
     PRINTLN = 102
     INPUT = 103
-    VAR = 104
-    IF = 105
-    THEN = 106
-    ENDIF = 107
-    WHILE = 108
-    REPEAT = 109
-    ENDWHILE = 110
+    LET = 104
+    VAR = 105
+    IF = 106
+    THEN = 107
+    ENDIF = 108
+    WHILE = 109
+    REPEAT = 110
+    ENDWHILE = 111
+
+    # Types
+    NAT = 112
+    INT = 113
+    REAL = 114
+    STR = 115
 
     # Operators
     EQ = 201
@@ -35,22 +42,23 @@ class TokType(Enum):
     GT = 209
     GTEQ = 210
     NOTEQ = 211
+    COLON = 212
 
 
 class Token:
-    def __init__(self, tokText, tokKind) -> None:
+    def __init__(self, tokText: str, tokKind: TokType) -> None:
         self.text = tokText
         self.kind = tokKind
 
     @staticmethod
-    def checkIfKeyword(tokText):
+    def checkIfKeyword(tokText: str) -> Union[TokType, None]:
         for kind in TokType:
             if kind.name.lower() == tokText and kind.value >= 100 and kind.value < 200:
                 return kind
         return None
 
 class Lexer:
-    def __init__(self, input) -> None:
+    def __init__(self, input: str) -> None:
         self.src = input + "\n"
         self.curChar = ''
         self.curPos = -1
@@ -71,7 +79,7 @@ class Lexer:
         return self.src[self.curPos + 1]
 
 
-    def abort(self, message) -> None:
+    def abort(self, message: str) -> None:
         sys.exit(f"Calci - LexError: \n\t{message}")
     
     # Skips whitespaces except newlines
@@ -79,6 +87,7 @@ class Lexer:
         while self.curChar in [' ', '\t', '\r']:
             self.nextChar()
 
+    # Skips Comments
     def skipComment(self) -> None:
         if self.curChar == '#':
             while self.curChar != '\n':
@@ -111,7 +120,7 @@ class Lexer:
                 self.nextChar()
                 token = Token(lastChar + self.curChar, TokType.COLONEQ)
             else:
-                self.abort(f"Expected := got :{self.peek()}")
+                token = Token(self.curChar, TokType.COLON)
         
         elif self.curChar == "!":
             if self.peek() == "=":

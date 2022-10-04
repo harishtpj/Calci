@@ -1,3 +1,4 @@
+let number: nat
 print "Enter a number: "
 input number
 print "You entered "

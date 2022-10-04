@@ -1,3 +1,5 @@
+# This is a Hello, World program written in Calci language
+
 println "Hello, World!"
 println "This is just for testing"
 println "How is it?"

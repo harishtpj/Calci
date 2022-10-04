@@ -12,6 +12,7 @@ statement
     | 'PRINTLN' (expression | string) nl
     | 'INPUT' identifier nl
     | 'VAR' identifier ':=' expression nl
+    | 'LET' identifier ':' type nl
     | 'IF' comparison 'THEN' nl statement* 'ENDIF' nl
     | 'WHILE' comparison 'REPEAT' nl statement* 'ENDWHILE' nl
     ;
@@ -50,4 +51,8 @@ identifier
 
 string
     : '"' .+ '"'
+    ;
+
+type
+    : 'nat' | 'int' | 'real' | 'str'
     ;
