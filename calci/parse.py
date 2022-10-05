@@ -105,15 +105,22 @@ class Parser:
         
         # Calci.g => Subrule {5}
         elif self.checkToken(TokType.LET):
+            vars_decl = []
             print("STATEMENT-LET")
             self.nextToken()
 
-            if self.curToken.text not in self.vars:
-                self.vars.add(self.curToken.text)
+            while not self.checkToken(TokType.COLON):
+                if self.curToken.text not in self.vars:
+                    self.vars.add(self.curToken.text)
+                else:
+                    self.abort(f"Redeclaring variable: {self.curToken.text}")
 
-            self.match(TokType.IDENTIFIER)
-            self.match(TokType.COLON)
+                vars_decl.append(self.curToken.text)
+                self.match(TokType.IDENTIFIER)
+    
+            print(f"Vars: {vars_decl}")
             
+            self.match(TokType.COLON)
             if self.isType():
                 print(f"Vartype ({self.curToken.text})")
                 self.nextToken()

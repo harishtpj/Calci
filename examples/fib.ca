@@ -1,7 +1,4 @@
-let a: int
-let b: int
-let c: int
-let nums: nat
+let a b c nums: int
 
 println "How many fibonacci numbers do you want?"
 input nums

@@ -1,11 +1,11 @@
-# The Calci Programming language Interpreter
+# The Calci Programming language Compiler
 
 import sys
 from calci.lex import Lexer
 from calci.parse import Parser
 
 def main():
-    print("Calci Interpreter")
+    print("Calci Compiler")
 
     if len(sys.argv) < 2:
         sys.exit("Error: Compiler needs source file as argument.")
