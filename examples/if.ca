@@ -4,6 +4,6 @@ var foo := bar * 3 + 2
 if foo > 0 then
   println "yes!"
   if 10 * 10 < 100 then
-    println bar
+    println int bar
   endif
 endif

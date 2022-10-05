@@ -1,5 +1,5 @@
 let number: nat
 print "Enter a number: "
-input number
+input nat number
 print "You entered "
-println number
+println nat number

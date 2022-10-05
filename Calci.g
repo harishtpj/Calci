@@ -8,11 +8,11 @@ program
     ;
 
 statement
-    : 'PRINT' (expression | string) nl
-    | 'PRINTLN' (expression | string) nl
+    : 'PRINT' (type expression | string) nl
+    | 'PRINTLN' (type expression | string) nl
     | 'INPUT' identifier nl
     | 'VAR' identifier ':=' expression nl
-    | 'LET' identifier ':' type nl
+    | 'LET' (identifier)+ ':' type nl
     | 'IF' comparison 'THEN' nl statement* 'ENDIF' nl
     | 'WHILE' comparison 'REPEAT' nl statement* 'ENDWHILE' nl
     ;

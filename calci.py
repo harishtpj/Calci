@@ -3,6 +3,7 @@
 import sys
 from calci.lex import Lexer
 from calci.parse import Parser
+from calci.emit import Emitter
 
 def main():
     print("Calci Compiler")
@@ -13,10 +14,12 @@ def main():
         input = progfile.read()
 
     lexer = Lexer(input)
-    parser = Parser(lexer)
+    emitter = Emitter("out.c")
+    parser = Parser(lexer, emitter)
 
     parser.program()
-    print("Parsing completed")
+    emitter.writeFile()
+    print("Program Compiled")
 
 if __name__ == "__main__":
     main()

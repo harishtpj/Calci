@@ -1,13 +1,14 @@
-let a b c nums: int
+let a b c: int
+let nums: nat
 
 println "How many fibonacci numbers do you want?"
-input nums
+input nat nums
 println ""
 
 var a := 0
 var b := 1
 while nums > 0 repeat
-    println a
+    println int a
     var c := a + b
     var a := b
     var b := c
