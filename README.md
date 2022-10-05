@@ -16,4 +16,4 @@ The current version of Calci is v0.9.
 # 📝 License
 
 #### Copyright © 2022 [M.V.Harish Kumar](https://github.com/harishtpj). <br>
-#### This project is [MIT](https://github.com/harishtpj/MathX/blob/main/LICENSE) licensed..
+#### This project is [BSD-3](https://github.com/harishtpj/Calci/blob/master/LICENSE) licensed..
