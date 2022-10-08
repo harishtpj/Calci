@@ -1,27 +1,29 @@
 # The Calci Programming language parser
 
-import sys
+from . import tools
+from .errors.rterror import RuntimeError
 from .lex import Lexer, TokType
 from .emit import Emitter
 
 class Parser:
     def __init__(self, lexer: Lexer, emitter: Emitter) -> None:
-        self.lexer = lexer
-        self.emitter = emitter
+        self.lexer: Lexer = lexer
+        self.emitter: Emitter = emitter
 
-        self.vars = set()        # Variables declared so far.
-        self.curToken = None
-        self.peekToken = None
+        self.vars: set = set()        # Variables declared so far.
+        self.curToken: str = None
+        self.peekToken: str = None
+        self.line: int = 0
         self.nextToken()
-        self.nextToken()            # Two calls to initialize current & peek
+        self.nextToken()              # Two calls to initialize current & peek
 
-    def checkToken(self, kind) -> bool:
+    def checkToken(self, kind: TokType) -> bool:
         return kind == self.curToken.kind
 
-    def checkPeek(self, kind) -> bool:
+    def checkPeek(self, kind: TokType) -> bool:
         return kind == self.peekToken.kind
 
-    def match(self, kind) -> None:
+    def match(self, kind: TokType) -> None:
         if not self.checkToken(kind):
             self.abort(f"Expected {kind.name}, got {self.curToken.kind.name}")
         self.nextToken()
@@ -32,7 +34,10 @@ class Parser:
         self.peekToken = self.lexer.getToken()
 
     def abort(self, message) -> None:
-        sys.exit(f"Calci - ParseError: \n\t{message}")
+        tools.throwError(RuntimeError(
+            "ParseError",
+            message
+        ))
     
     # Return true if the current token is a comparison operator.
     def isComparisonOperator(self) -> bool:
@@ -48,26 +53,6 @@ class Parser:
                self.checkToken(TokType.INT) or \
                self.checkToken(TokType.REAL) or \
                self.checkToken(TokType.STR)
-    
-    def gencFmt(self, vtype: str, forfunc="num") -> str:
-        if vtype == "nat" or vtype == "int":
-            return "%d"
-        elif vtype == "real":
-            return "%lf"
-        elif vtype == "str" and forfunc == "i":
-            return "%[^\\n]%*c"
-        else:
-            return "%s"
-    
-    def getcType(self, vtype: str) -> str:
-        return {
-            "nat": "unsigned int",
-            "int" : "int",
-            "real" : "double",
-            "str": "char[100]"
-        }[vtype]
-        
-
 
     # Grammar Parsing Rules (see Calci.g for rules)
 
@@ -77,6 +62,7 @@ class Parser:
         self.emitter.headerLine("int main(void){")
 
         while self.checkToken(TokType.NEWLINE):
+            self.line += 1
             self.nextToken()
 
         while not self.checkToken(TokType.EOF):
@@ -95,7 +81,7 @@ class Parser:
                 self.emitter.emitLine(f"printf(\"{self.curToken.text}\");")
                 self.nextToken() # String
             else:
-                self.emitter.emit(f"printf(\"{self.gencFmt(self.curToken.text)}\",")
+                self.emitter.emit(f"printf(\"{tools.gencFmt(self.curToken.text)}\",")
                 self.nextToken()
                 self.expression() # Expression
                 self.emitter.emitLine(");")
@@ -108,7 +94,7 @@ class Parser:
                 self.emitter.emitLine(f"printf(\"{self.curToken.text}\");")
                 self.nextToken() # String
             else:
-                self.emitter.emit(f"printf(\"{self.gencFmt(self.curToken.text)}\",")
+                self.emitter.emit(f"printf(\"{tools.gencFmt(self.curToken.text)}\",")
                 self.nextToken()
                 self.expression() # Expression
                 self.emitter.emitLine(");")
@@ -117,7 +103,7 @@ class Parser:
         # Calci.g => Subrule {3}
         elif self.checkToken(TokType.INPUT):
             self.nextToken()
-            fmt = self.gencFmt(self.curToken.text, "i")
+            fmt = tools.gencFmt(self.curToken.text, "i")
             self.nextToken()
 
             if self.curToken.text not in self.vars:
@@ -141,7 +127,7 @@ class Parser:
         
         # Calci.g => Subrule {5}
         elif self.checkToken(TokType.LET):
-            vars_decl = []
+            vars_decl: list[str] = []
             self.nextToken()
 
             while not self.checkToken(TokType.COLON):
@@ -157,7 +143,7 @@ class Parser:
             self.match(TokType.COLON)
             if self.isType():
                 vals = ",".join(vars_decl)
-                self.emitter.headerLine(f"{self.getcType(self.curToken.text)} {vals};")
+                self.emitter.headerLine(f"{tools.getcType(self.curToken.text)} {vals};")
                 self.nextToken()
             else:
                 self.abort(f"Expected type name at: {self.curToken.text}")
@@ -172,13 +158,36 @@ class Parser:
             self.nl()
             self.emitter.emitLine("){")
 
-            while not self.checkToken(TokType.ENDIF):
+            while not self.checkToken(TokType.ELSE):
                 self.statement()
             
-            self.match(TokType.ENDIF)
+            self.match(TokType.ELSE)
+            self.nl()
+            self.emitter.emitLine("} else{")
+
+            while not self.checkToken(TokType.END):
+                self.statement()
+            
+            self.match(TokType.END)
             self.emitter.emitLine("}")
         
         # Calci.g => Subrule {7}
+        elif self.checkToken(TokType.IF):
+            self.nextToken()
+            self.emitter.emit("if(")
+            self.comparison()
+
+            self.match(TokType.THEN)
+            self.nl()
+            self.emitter.emitLine("){")
+
+            while not self.checkToken(TokType.END):
+                self.statement()
+            
+            self.match(TokType.END)
+            self.emitter.emitLine("}")
+        
+        # Calci.g => Subrule {8}
         elif self.checkToken(TokType.WHILE):
             self.nextToken()
             self.emitter.emit("while(")
@@ -188,10 +197,10 @@ class Parser:
             self.nl()
             self.emitter.emitLine("){")
 
-            while not self.checkToken(TokType.ENDWHILE):
+            while not self.checkToken(TokType.END):
                 self.statement()
             
-            self.match(TokType.ENDWHILE)
+            self.match(TokType.END)
             self.emitter.emitLine("}")
         
         else:
@@ -202,9 +211,10 @@ class Parser:
     
     # Calci.g => line [19]:
     def comparison(self) -> None:
-
         self.expression()
         if self.isComparisonOperator():
+            if self.checkToken(TokType.EQ):
+                self.curToken.text = "=="
             self.emitter.emit(self.curToken.text)
             self.nextToken()
             self.expression()
@@ -219,8 +229,8 @@ class Parser:
     # Calci.g => line [23]:
     def expression(self) -> None:
         self.term()
-        # Can have 0 or more +/- and expressions.
-        while self.checkToken(TokType.PLUS) or self.checkToken(TokType.MINUS):
+        # Can have 0 or more +/-/% and expressions.
+        while self.checkToken(TokType.PLUS) or self.checkToken(TokType.MINUS) or self.checkToken(TokType.MODSIGN):
             self.emitter.emit(self.curToken.text)
             self.nextToken()
             self.term()
@@ -260,4 +270,5 @@ class Parser:
     def nl(self) -> None:
         self.match(TokType.NEWLINE)
         while self.checkToken(TokType.NEWLINE):
+            self.line += 1
             self.nextToken()

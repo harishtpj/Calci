@@ -1,3 +1,3 @@
-__version__ = 1.0
-__author__ = "M.V.Harish Kumar"
-__version_str__ = f"This is Calci programming language v{__version__} Created by {__author__}"
+__version__: int = 1.0
+__author__: str = "M.V.Harish Kumar"
+__ver_str__: str = f"This is Calci programming language v{__version__} Created by {__author__}."

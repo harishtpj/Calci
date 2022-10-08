@@ -1,10 +1,10 @@
-# The Calci Programming language C code emitter
+# The Calci Programming language Destination language code emitter
 
 class Emitter:
     def __init__(self, fullpath: str) -> None:
-        self.fullPath = fullpath
-        self.header = ""
-        self.code = ""
+        self.fullPath: str = fullpath
+        self.header: str = ""
+        self.code: str = ""
 
     def emit(self, code: str) -> None:
         self.code += code

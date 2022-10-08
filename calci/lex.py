@@ -1,7 +1,8 @@
 # The Calci Programming language Lexer
-import sys
+
 from enum import Enum
-from typing import Union
+from . import tools
+from .errors.comperror import CompilerError
 
 class TokType(Enum):
     # Basic Tokens
@@ -19,10 +20,10 @@ class TokType(Enum):
     VAR = 105
     IF = 106
     THEN = 107
-    ENDIF = 108
-    WHILE = 109
-    REPEAT = 110
-    ENDWHILE = 111
+    WHILE = 108
+    REPEAT = 109
+    END = 110
+    ELSE = 111
 
     # Types
     NAT = 112
@@ -43,6 +44,7 @@ class TokType(Enum):
     GTEQ = 210
     NOTEQ = 211
     COLON = 212
+    MODSIGN = 213
 
 
 class Token:
@@ -51,7 +53,7 @@ class Token:
         self.kind = tokKind
 
     @staticmethod
-    def checkIfKeyword(tokText: str) -> Union[TokType, None]:
+    def checkIfKeyword(tokText: str) -> TokType:
         for kind in TokType:
             if kind.name.lower() == tokText and kind.value >= 100 and kind.value < 200:
                 return kind
@@ -59,9 +61,9 @@ class Token:
 
 class Lexer:
     def __init__(self, input: str) -> None:
-        self.src = input + "\n"
-        self.curChar = ''
-        self.curPos = -1
+        self.src: str = input + "\n"
+        self.curChar: str = ''
+        self.curPos: int = -1
         self.nextChar()
     
     # Processes the next character for lexing
@@ -80,7 +82,9 @@ class Lexer:
 
 
     def abort(self, message: str) -> None:
-        sys.exit(f"Calci - LexError: \n\t{message}")
+        tools.throwError(CompilerError(
+            "LexError", message
+        ))
     
     # Skips whitespaces except newlines
     def skipWS(self) -> None:
@@ -94,10 +98,10 @@ class Lexer:
                 self.nextChar()
 
     # Returns the next token
-    def getToken(self) -> Union[Token, None]:
+    def getToken(self) -> Token:
         self.skipWS()
         self.skipComment()
-        token = None
+        token: Token = None
 
         if self.curChar == "+":
             token = Token(self.curChar, TokType.PLUS)
@@ -111,12 +115,15 @@ class Lexer:
         elif self.curChar == "/":
             token = Token(self.curChar, TokType.SLASH)
         
+        elif self.curChar == "%":
+            token = Token(self.curChar, TokType.MODSIGN)
+        
         elif self.curChar == "=":
             token = Token(self.curChar, TokType.EQ)
 
         elif self.curChar == ":":
             if self.peek() == "=":
-                lastChar = self.curChar
+                lastChar: str = self.curChar
                 self.nextChar()
                 token = Token(lastChar + self.curChar, TokType.COLONEQ)
             else:
@@ -124,7 +131,7 @@ class Lexer:
         
         elif self.curChar == "!":
             if self.peek() == "=":
-                lastChar = self.curChar
+                lastChar: str = self.curChar
                 self.nextChar()
                 token = Token(lastChar + self.curChar, TokType.NOTEQ)
             else:
@@ -132,7 +139,7 @@ class Lexer:
         
         elif self.curChar == ">":
             if self.peek() == "=":
-                lastChar = self.curChar
+                lastChar: str = self.curChar
                 self.nextChar()
                 token = Token(lastChar + self.curChar, TokType.GTEQ)
             else:
@@ -140,7 +147,7 @@ class Lexer:
         
         elif self.curChar == "<":
             if self.peek() == "=":
-                lastChar = self.curChar
+                lastChar: str = self.curChar
                 self.nextChar()
                 token = Token(lastChar + self.curChar, TokType.LTEQ)
             else:
@@ -148,16 +155,16 @@ class Lexer:
         
         elif self.curChar == '\"':
             self.nextChar()
-            startPos = self.curPos
+            startPos: int = self.curPos
             
             while self.curChar != '\"':
                 self.nextChar()
             
-            tokText = self.src[startPos : self.curPos]
+            tokText: str = self.src[startPos : self.curPos]
             token = Token(tokText, TokType.STRING)
         
         elif self.curChar.isdigit():
-            startPos = self.curPos
+            startPos: int = self.curPos
             while self.peek().isdigit():
                 self.nextChar()
 
@@ -168,16 +175,16 @@ class Lexer:
                 while self.peek().isdigit():
                     self.nextChar()
             
-            tokText = self.src[startPos : self.curPos + 1]
+            tokText: str = self.src[startPos : self.curPos + 1]
             token = Token(tokText, TokType.NUMBER)
         
         elif self.curChar.isalpha():
-            startPos = self.curPos
+            startPos: int = self.curPos
             while self.peek().isalnum():
                 self.nextChar()
             
-            tokText = self.src[startPos : self.curPos + 1]
-            keyword = Token.checkIfKeyword(tokText)
+            tokText: str = self.src[startPos : self.curPos + 1]
+            keyword: str = Token.checkIfKeyword(tokText)
             if keyword == None:
                 token = Token(tokText, TokType.IDENTIFIER)
             else:
