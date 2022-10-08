@@ -13,8 +13,9 @@ statement
     | 'INPUT' identifier nl
     | 'VAR' identifier ':=' expression nl
     | 'LET' (identifier)+ ':' type nl
-    | 'IF' comparison 'THEN' nl statement* 'ENDIF' nl
-    | 'WHILE' comparison 'REPEAT' nl statement* 'ENDWHILE' nl
+    | 'IF' comparison 'THEN' nl statement* 'ELSE' nl statement* 'END' nl
+    | 'IF' comparison 'THEN' nl statement* 'END' nl
+    | 'WHILE' comparison 'REPEAT' nl statement* 'END' nl
     ;
 
 comparison
@@ -22,7 +23,7 @@ comparison
     ;
 
 expression
-    : term (( '-' | '+' ) term)*
+    : term (( '-' | '+' | '%' ) term)*
     ;
 
 term
