@@ -1,7 +1,9 @@
+# Fibnocci Program written in Calci Language
+
 let a b c: int
 let nums: nat
 
-println "How many fibonacci numbers do you want?"
+print "How many fibonacci numbers do you want? "
 input nat nums
 println ""
 
@@ -13,4 +15,4 @@ while nums > 0 repeat
     var a := b
     var b := c
     var nums := nums - 1
-endwhile
+end

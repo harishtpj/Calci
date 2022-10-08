@@ -1,5 +1,8 @@
-let number: nat
-print "Enter a number: "
-input nat number
-print "You entered "
-println nat number
+# Simple Calci program to get input and respond to it
+
+let rating: nat
+
+print "Enter your rating for Calci language: "
+input nat rating
+print "You rated: "
+println nat rating

@@ -1,0 +1,16 @@
+# Simple Odd Even tester
+
+let inum: nat
+
+println "Oddeven Checker"
+println ""
+
+print "Enter a number: "
+input nat inum
+
+print nat inum
+if inum % 2 = 0 then
+  println " is a even number"
+else
+  println " is a odd number"
+end
