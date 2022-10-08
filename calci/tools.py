@@ -13,11 +13,10 @@ def runProgram(fname: str, dlang: str) -> None:
         cc: str = os.getenv("CC", "tcc")
         cfname: str = dlfName(fname, "c")
         exe: str = dlfName(fname)
-        if os.name == 'nt':
-            exe += ".exe"
+        exe += ".exe" if os.name == 'nt' else ""
         if os.system(f"{cc} {cfname} -o {exe}") != 0:
             os.remove(cfname)
-            exit(0)
+            exit(-1)
 
 def clearTemp(tempf: str, fname: str):
     os.remove(dlfName(tempf.name, "c"))
@@ -30,15 +29,14 @@ def clearTemp(tempf: str, fname: str):
         fexe += ".exe"
     shutil.move(tempexe,fexe)
 
-def gencFmt(vtype: str, forfunc: str="num") -> str:
-    if vtype == "nat" or vtype == "int":
-        return "%d"
-    elif vtype == "real":
-        return "%lf"
-    elif vtype == "str" and forfunc == "i":
-        return "%[^\\n]%*c"
-    else:
-        return "%s"
+def gencFmt(vtype: str, forfunc: str="_") -> str:
+    return {
+        "_nat": "%d",
+        "_int": "%d",
+        "_real": "%lf",
+        "_str": "%s",
+        "istr": "%[^\\n]%*c"
+    }[forfunc+vtype]
 
 def getcType(vtype: str) -> str:
     return {
