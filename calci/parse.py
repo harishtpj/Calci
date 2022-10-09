@@ -233,7 +233,7 @@ class Parser:
             self.emitter.emit(";")
 
             self.match(TokType.TO)
-            self.emitter.emit(ctr + "<=")
+            self.emitter.emit(ctr + "<")
             self.expression()
             self.emitter.emit(";")
 
