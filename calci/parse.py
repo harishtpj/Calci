@@ -188,36 +188,22 @@ class Parser:
             self.nl()
             self.emitter.emitLine("){")
 
-            while not self.checkToken(TokType.ELSE):
+            while not (self.checkToken(TokType.ELSE) or self.checkToken(TokType.END)):
                 self.statement()
             
-            self.match(TokType.ELSE)
-            self.nl()
-            self.emitter.emitLine("} else{")
+            if self.checkToken(TokType.ELSE):
+                self.match(TokType.ELSE)
+                self.emitter.emit("} else ")
+                self.nl()
+                self.emitter.emitLine("{")
 
-            while not self.checkToken(TokType.END):
-                self.statement()
-            
+                while not self.checkToken(TokType.END):
+                    self.statement()
+
             self.match(TokType.END)
             self.emitter.emitLine("}")
         
         # Calci.g => Subrule {7}
-        elif self.checkToken(TokType.IF):
-            self.nextToken()
-            self.emitter.emit("if(")
-            self.comparison()
-
-            self.match(TokType.THEN)
-            self.nl()
-            self.emitter.emitLine("){")
-
-            while not self.checkToken(TokType.END):
-                self.statement()
-            
-            self.match(TokType.END)
-            self.emitter.emitLine("}")
-        
-        # Calci.g => Subrule {8}
         elif self.checkToken(TokType.WHILE):
             self.nextToken()
             self.emitter.emit("while(")
@@ -233,8 +219,40 @@ class Parser:
             self.match(TokType.END)
             self.emitter.emitLine("}")
         
+        # Calci.g => Subrule {8}
+        elif self.checkToken(TokType.FOR):
+            self.nextToken()
+            self.emitter.emit("for(")
+            ctr: str = self.curToken.text
+            if self.curToken.text not in self.vars:
+                self.abort(f"Referencing variable before declaration: {self.curToken.text}")
+            self.match(TokType.IDENTIFIER)
+            self.match(TokType.COLONEQ)
+            self.emitter.emit(ctr + " = ")
+            self.expression()
+            self.emitter.emit(";")
+
+            self.match(TokType.TO)
+            self.emitter.emit(ctr + "<=")
+            self.expression()
+            self.emitter.emit(";")
+
+            self.match(TokType.BY)
+            self.emitter.emit(ctr + "+=")
+            self.expression()
+            self.match(TokType.DO)
+            self.nl()
+            self.emitter.emitLine("){")
+
+            while not self.checkToken(TokType.END):
+                self.statement()
+
+            self.match(TokType.END)
+            self.emitter.emitLine("}")
+
+        
         else:
-            self.abort(f"Invalid statement at {self.curToken.text} ({self.curToken.kind.name})")
+            self.abort(f"Invalid statement at {self.curToken.text} ({self.curToken.kind})")
             
         # Newline
         self.nl()

@@ -54,12 +54,16 @@ class TokType(Enum):
     REPEAT = 109
     END = 110
     ELSE = 111
+    FOR = 112
+    TO = 113
+    BY = 114
+    DO = 115
 
     # Types
-    NAT = 112
-    INT = 113
-    REAL = 114
-    STR = 115
+    NAT = 116
+    INT = 117
+    REAL = 118
+    STR = 119
 
     # Operators
     EQ = 201

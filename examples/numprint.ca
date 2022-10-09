@@ -1,0 +1,9 @@
+# Print List of Numbers until given value
+
+let lmt i: nat
+print "Enter limit: "
+input nat lmt
+
+for i := 0 to lmt by 1 do
+    println nat i
+end

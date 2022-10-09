@@ -43,9 +43,9 @@ statement
     | 'INPUT' identifier nl
     | 'VAR' identifier ':=' expression nl
     | 'LET' (identifier)+ ':' type nl
-    | 'IF' comparison 'THEN' nl statement* 'ELSE' nl statement* 'END' nl
-    | 'IF' comparison 'THEN' nl statement* 'END' nl
+    | 'IF' comparison 'THEN' nl statement* ('ELSE' nl statement*)? 'END' nl
     | 'WHILE' comparison 'REPEAT' nl statement* 'END' nl
+    | 'FOR' identifier ':=' expression 'TO' expression 'BY' expression 'DO' nl statement* 'END' nl
     ;
 
 comparison

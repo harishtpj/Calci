@@ -66,7 +66,10 @@ def gencFmt(vtype: str, forfunc: str="_") -> str:
         "_int": "%d",
         "_real": "%lf",
         "_str": "%s",
-        "istr": "%[^\\n]%*c"
+        "istr": "%[^\\n]%*c",
+        "inat": "%d",
+        "iint": "%d",
+        "ireal": "%lf"
     }[forfunc+vtype]
 
 def getcType(vtype: str) -> str:
