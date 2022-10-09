@@ -1,0 +1,21 @@
+harish$~ ls
+for_c  for_c.c  for_ca  for_ca.ca  rep.txt
+
+harish$~ time ./for_c
+
+real    0m0.042s
+user    0m0.000s
+sys     0m0.016s
+
+= 420 milliseconds
+
+harish$~ time ./for_ca
+
+real    0m0.041s
+user    0m0.000s
+sys     0m0.000s
+
+= 410 milliseconds
+
+As Calci Lang and C lang Compiles to same machine code, 
+Equivalent performance can be seen in both programs of similar logic code

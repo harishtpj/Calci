@@ -1,0 +1,5 @@
+let i a: nat
+
+for i := 0 to 10000 by 1 do
+    var a := i * 12345
+end
