@@ -34,10 +34,14 @@ import sys
 from . import Error
 
 class RuntimeError(Error):
-    def __init__(self, errname: str, errmsg: str) -> None:
+    def __init__(self, errname: str, errmsg: str, errstmt: str, errlno: int) -> None:
+        self.errstmt: str = errstmt
+        self.errlno: int = errlno
         super().__init__(errname, errmsg)
 
     def run(self) -> Error:
         sys.stderr.write("Calci - Runtime Error:\n")
+        sys.stderr.write(f"In Line {self.errlno}:\n")
+        sys.stderr.write(f"\t{self.errstmt}\n")
         sys.stderr.write(f"{self.errname} : {self.errmsg}\n")
         sys.exit(-1)

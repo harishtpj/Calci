@@ -43,7 +43,6 @@ class Parser:
         self.vars: set = set()        # Variables declared so far.
         self.curToken: str = None
         self.peekToken: str = None
-        self.line: int = 0
         self.nextToken()
         self.nextToken()              # Two calls to initialize current & peek
 
@@ -66,7 +65,9 @@ class Parser:
     def abort(self, message) -> None:
         tools.throwError(RuntimeError(
             "ParseError",
-            message
+            message,
+            self.lexer.src_lines[self.lexer.lineno-1],
+            self.lexer.lineno
         ))
     
     # Return true if the current token is a comparison operator.
@@ -92,7 +93,7 @@ class Parser:
         self.emitter.headerLine("int main(void){")
 
         while self.checkToken(TokType.NEWLINE):
-            self.line += 1
+            self.lexer.lineno += 1
             self.nextToken()
 
         while not self.checkToken(TokType.EOF):
@@ -316,7 +317,8 @@ class Parser:
     
     # Calci.g => line [38]:
     def nl(self) -> None:
+        self.lexer.lineno += 1
         self.match(TokType.NEWLINE)
         while self.checkToken(TokType.NEWLINE):
-            self.line += 1
+            self.lexer.lineno += 1
             self.nextToken()

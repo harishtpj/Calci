@@ -32,7 +32,7 @@
 
 from enum import Enum
 from . import tools
-from .errors.comperror import CompilerError
+from .errors.rterror import RuntimeError
 
 class TokType(Enum):
     # Basic Tokens
@@ -83,8 +83,8 @@ class TokType(Enum):
 
 class Token:
     def __init__(self, tokText: str, tokKind: TokType) -> None:
-        self.text = tokText
-        self.kind = tokKind
+        self.text: str = tokText
+        self.kind: str = tokKind
 
     @staticmethod
     def checkIfKeyword(tokText: str) -> TokType:
@@ -96,6 +96,8 @@ class Token:
 class Lexer:
     def __init__(self, input: str) -> None:
         self.src: str = input + "\n"
+        self.src_lines: str = self.src.splitlines()
+        self.lineno: int = 1
         self.curChar: str = ''
         self.curPos: int = -1
         self.nextChar()
@@ -116,8 +118,11 @@ class Lexer:
 
 
     def abort(self, message: str) -> None:
-        tools.throwError(CompilerError(
-            "LexError", message
+        tools.throwError(RuntimeError(
+            'LexError',
+            message,
+            self.src_lines[self.lineno-1],
+            self.lineno
         ))
     
     # Skips whitespaces except newlines
@@ -130,6 +135,7 @@ class Lexer:
         if self.curChar == '#':
             while self.curChar != '\n':
                 self.nextChar()
+            self.lineno += 1
 
     # Returns the next token
     def getToken(self) -> Token:
