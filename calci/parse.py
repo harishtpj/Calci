@@ -59,6 +59,9 @@ class Parser:
 
     # Advances the current token
     def nextToken(self) -> None:
+        if self.peekToken is not None:
+            if self.peekToken.kind == TokType.NEWLINE:
+                self.lexer.lineno += 1
         self.curToken = self.peekToken
         self.peekToken = self.lexer.getToken()
 
@@ -317,7 +320,6 @@ class Parser:
     
     # Calci.g => line [38]:
     def nl(self) -> None:
-        self.lexer.lineno += 1
         self.match(TokType.NEWLINE)
         while self.checkToken(TokType.NEWLINE):
             self.lexer.lineno += 1
