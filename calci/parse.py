@@ -87,6 +87,31 @@ class Parser:
                self.checkToken(TokType.INT) or \
                self.checkToken(TokType.REAL) or \
                self.checkToken(TokType.STR)
+    
+    def parseIF(self, type="") -> None:
+        if type == "elsif":
+            self.match(TokType.ELSIF)
+            self.emitter.emit("}else ")
+
+        self.emitter.emit("if(")
+        self.comparison()
+        self.match(TokType.THEN)
+        self.nl()
+        self.emitter.emitLine("){")
+
+        while not (self.checkToken(TokType.ELSE) or self.checkToken(TokType.END) or self.checkToken(TokType.ELSIF)):
+            self.statement()
+        
+        if self.checkToken(TokType.ELSE):
+            self.match(TokType.ELSE)
+            self.emitter.emit("} else ")
+            self.nl()
+            self.emitter.emitLine("{")
+            while not self.checkToken(TokType.END):
+                self.statement()
+        
+        if self.checkToken(TokType.ELSIF):
+            self.parseIF("elsif")
 
     # Grammar Parsing Rules (see Calci.g for rules)
 
@@ -185,7 +210,8 @@ class Parser:
         # Calci.g => Subrule {6}
         elif self.checkToken(TokType.IF):
             self.nextToken()
-            self.emitter.emit("if(")
+            self.parseIF()
+            """self.emitter.emit("if(")
             self.comparison()
 
             self.match(TokType.THEN)
@@ -203,6 +229,7 @@ class Parser:
 
                 while not self.checkToken(TokType.END):
                     self.statement()
+            """
 
             self.match(TokType.END)
             self.emitter.emitLine("}")

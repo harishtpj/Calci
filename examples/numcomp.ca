@@ -1,0 +1,17 @@
+# Simple Calci program to compare numbers
+
+let n1 n2: int
+
+print "Enter no 1: "
+input int n1
+
+print "Enter no 2: "
+input int n2
+
+if n1 = n2 then
+    println "The given numbers are equal"
+elsif n1 > n2 then
+    println "Number 1 is larger than the other"
+else
+    println "Number 2 is larger"
+end
