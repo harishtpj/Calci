@@ -58,12 +58,13 @@ class TokType(Enum):
     TO = 113
     BY = 114
     DO = 115
+    ELSIF = 116
 
     # Types
-    NAT = 116
-    INT = 117
-    REAL = 118
-    STR = 119
+    NAT = 117
+    INT = 118
+    REAL = 119
+    STR = 120
 
     # Operators
     EQ = 201
