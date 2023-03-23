@@ -121,7 +121,6 @@ class Parser:
         self.emitter.headerLine("int main(void){")
 
         while self.checkToken(TokType.NEWLINE):
-            self.lexer.lineno += 1
             self.nextToken()
 
         while not self.checkToken(TokType.EOF):
@@ -349,5 +348,4 @@ class Parser:
     def nl(self) -> None:
         self.match(TokType.NEWLINE)
         while self.checkToken(TokType.NEWLINE):
-            self.lexer.lineno += 1
             self.nextToken()
