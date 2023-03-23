@@ -7,7 +7,7 @@
 Calci - A Modern, Fast compiled language written in Python.
 
 # ℹ About
-**Calci** is a Compiler written in *Python* which Compiles to *C Language*. This language has a very **modern and simple syntax** which lessens the learning curve. This syntax is derived from Pascal and C Languages. The current version of Calci is **v1.0**.
+**Calci** is a Compiler written in *Python* which Compiles to *C Language*. This language has a very **modern and simple syntax** which lessens the learning curve. This syntax is derived from Pascal and C Languages. The current version of Calci is **v1.0**. For more info click [here](https://harish-kumar.gitbook.io/calci-manual/)
 
 # 📃 Requirements
 - Python >= 3.6
