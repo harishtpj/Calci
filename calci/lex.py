@@ -59,12 +59,13 @@ class TokType(Enum):
     BY = 114
     DO = 115
     ELSIF = 116
+    FMTPRINT = 117
 
     # Types
-    NAT = 117
-    INT = 118
-    REAL = 119
-    STR = 120
+    NAT = 118
+    INT = 119
+    REAL = 120
+    STR = 121
 
     # Operators
     EQ = 201

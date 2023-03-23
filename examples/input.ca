@@ -4,5 +4,4 @@ let rating: nat
 
 print "Enter your rating for Calci language: "
 input nat rating
-print "You rated: "
-println nat rating
+fmtprint "You rated: %d" rating

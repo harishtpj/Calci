@@ -40,6 +40,7 @@ program
 statement
     : 'PRINT' (type expression | string) nl
     | 'PRINTLN' (type expression | string) nl
+    | 'FMTPRINT' (string) (identifier)+ nl
     | 'INPUT' identifier nl
     | 'VAR' identifier ':=' expression nl
     | 'LET' (identifier)+ ':' type nl

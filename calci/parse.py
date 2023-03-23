@@ -159,6 +159,25 @@ class Parser:
                 self.emitter.emitLine(");")
             self.emitter.emitLine("printf(\"\\n\");")
         
+        elif self.checkToken(TokType.FMTPRINT):
+            self.nextToken()
+            self.emitter.emit(f"printf(\"{self.curToken.text}\"")
+
+            fmt_vars: list[str] = []
+            self.nextToken()
+
+            while not self.checkToken(TokType.NEWLINE):
+                if self.curToken.text not in self.vars:
+                    self.abort(f"Referencing variable before declaration: {self.curToken.text}")
+                    
+                fmt_vars.append(self.curToken.text)
+                self.match(TokType.IDENTIFIER)
+            
+            for fvars in fmt_vars:
+                self.emitter.emit(f", {fvars}")
+            
+            self.emitter.emitLine(");")
+        
         # Calci.g => Subrule {3}
         elif self.checkToken(TokType.INPUT):
             self.nextToken()
@@ -211,25 +230,6 @@ class Parser:
         elif self.checkToken(TokType.IF):
             self.nextToken()
             self.parseIF()
-            """self.emitter.emit("if(")
-            self.comparison()
-
-            self.match(TokType.THEN)
-            self.nl()
-            self.emitter.emitLine("){")
-
-            while not (self.checkToken(TokType.ELSE) or self.checkToken(TokType.END)):
-                self.statement()
-            
-            if self.checkToken(TokType.ELSE):
-                self.match(TokType.ELSE)
-                self.emitter.emit("} else ")
-                self.nl()
-                self.emitter.emitLine("{")
-
-                while not self.checkToken(TokType.END):
-                    self.statement()
-            """
 
             self.match(TokType.END)
             self.emitter.emitLine("}")
