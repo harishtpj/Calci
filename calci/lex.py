@@ -137,7 +137,6 @@ class Lexer:
         if self.curChar == '#':
             while self.curChar != '\n':
                 self.nextChar()
-            self.lineno += 1
 
     # Returns the next token
     def getToken(self) -> Token:
