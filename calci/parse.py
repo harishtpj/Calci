@@ -115,7 +115,7 @@ class Parser:
 
     # Grammar Parsing Rules (see Calci.g for rules)
 
-    # Calci.g => line [6]:
+    # Calci.g => rule program:
     def program(self) -> None:
         self.emitter.headerLine("#include <stdio.h>")
         self.emitter.headerLine("int main(void){")
@@ -129,7 +129,7 @@ class Parser:
         self.emitter.emitLine("return 0;")
         self.emitter.emitLine("}")
     
-    # Calci.g => line [10]:
+    # Calci.g => rule statement:
     def statement(self) -> None:
         # Calci.g => Subrule {1}
         if self.checkToken(TokType.PRINT):
@@ -158,6 +158,7 @@ class Parser:
                 self.emitter.emitLine(");")
             self.emitter.emitLine("printf(\"\\n\");")
         
+        # Calci.g => Subrule {3}
         elif self.checkToken(TokType.FMTPRINT):
             self.nextToken()
             self.emitter.emit(f"printf(\"{self.curToken.text}\"")
@@ -177,7 +178,7 @@ class Parser:
             
             self.emitter.emitLine(");")
         
-        # Calci.g => Subrule {3}
+        # Calci.g => Subrule {4}
         elif self.checkToken(TokType.INPUT):
             self.nextToken()
             fmt = tools.gencFmt(self.curToken.text, "i")
@@ -189,7 +190,7 @@ class Parser:
             self.emitter.emitLine(f"scanf(\"{fmt}\", &{self.curToken.text});")
             self.match(TokType.IDENTIFIER)
         
-        # Calci.g => Subrule {4}
+        # Calci.g => Subrule {5}
         elif self.checkToken(TokType.VAR):
             self.nextToken()
 
@@ -202,7 +203,7 @@ class Parser:
             self.expression()
             self.emitter.emitLine(";")
         
-        # Calci.g => Subrule {5}
+        # Calci.g => Subrule {6}
         elif self.checkToken(TokType.LET):
             vars_decl: list[str] = []
             self.nextToken()
@@ -225,7 +226,7 @@ class Parser:
             else:
                 self.abort(f"Expected type name at: {self.curToken.text}")
         
-        # Calci.g => Subrule {6}
+        # Calci.g => Subrule {7}
         elif self.checkToken(TokType.IF):
             self.nextToken()
             self.parseIF()
@@ -233,7 +234,7 @@ class Parser:
             self.match(TokType.END)
             self.emitter.emitLine("}")
         
-        # Calci.g => Subrule {7}
+        # Calci.g => Subrule {8}
         elif self.checkToken(TokType.WHILE):
             self.nextToken()
             self.emitter.emit("while(")
@@ -249,7 +250,7 @@ class Parser:
             self.match(TokType.END)
             self.emitter.emitLine("}")
         
-        # Calci.g => Subrule {8}
+        # Calci.g => Subrule {9}
         elif self.checkToken(TokType.FOR):
             self.nextToken()
             self.emitter.emit("for(")
@@ -287,7 +288,7 @@ class Parser:
         # Newline
         self.nl()
     
-    # Calci.g => line [19]:
+    # Calci.g => rule comparison:
     def comparison(self) -> None:
         self.expression()
         if self.isComparisonOperator():
@@ -304,7 +305,7 @@ class Parser:
             self.nextToken()
             self.expression()
     
-    # Calci.g => line [23]:
+    # Calci.g => rule expression:
     def expression(self) -> None:
         self.term()
         # Can have 0 or more +/-/% and expressions.
@@ -313,7 +314,7 @@ class Parser:
             self.nextToken()
             self.term()
     
-    # Calci.g => line [27]:
+    # Calci.g => rule term:
     def term(self) -> None:
         self.unary()
         # Can have 0 or more *// and expressions.
@@ -322,7 +323,7 @@ class Parser:
             self.nextToken()
             self.unary()
     
-    # Calci.g => line [31]:
+    # Calci.g => rule unary:
     def unary(self) -> None:
         # Optional unary +/-
         if self.checkToken(TokType.PLUS) or self.checkToken(TokType.MINUS):
@@ -330,7 +331,7 @@ class Parser:
             self.nextToken()        
         self.primary()
     
-    # Calci.g => line [35]:
+    # Calci.g => rule primary:
     def primary(self) -> None:
         if self.checkToken(TokType.NUMBER):
             self.emitter.emit(self.curToken.text)
@@ -344,7 +345,7 @@ class Parser:
             # Error!
             self.abort(f"Unexpected token at {self.curToken.text}")
     
-    # Calci.g => line [38]:
+    # Calci.g => rule nl:
     def nl(self) -> None:
         self.match(TokType.NEWLINE)
         while self.checkToken(TokType.NEWLINE):
